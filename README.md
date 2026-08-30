@@ -89,6 +89,10 @@ wrangler.jsonc    Optional Cloudflare Workers deployment
 
 Do not commit `.env`, `.dev.vars`, Cloudflare API tokens, or provider credentials. See [SECURITY.md](SECURITY.md) for private vulnerability reports.
 
+## Releases
+
+Stable versions are published on the [GitHub Releases page](https://github.com/mkantem/arvel-scholar/releases). See [CHANGELOG.md](CHANGELOG.md) for notable changes.
+
 ## License
 
 Arvel Scholar is released under the [MIT License](LICENSE). Third-party components retain their own copyright and license notices.
