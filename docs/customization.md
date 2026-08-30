@@ -4,12 +4,12 @@
 
 Edit `config.yml` and replace:
 
-- `Alex Scholar`
-- `alex@example.org`
+- `Arvel Scholar`
+- `hello@example.org`
 - `https://example.org`
 - the sample biography and social-profile URLs
 
-Search the repository for `Alex Scholar` and `example.org` before publishing.
+Search the repository for `Arvel Scholar` and `example.org` before publishing.
 
 ## Languages
 

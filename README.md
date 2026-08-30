@@ -4,6 +4,8 @@ Arvel Scholar is a bilingual academic website template built with [Hugo](https:/
 
 It provides sections for papers, projects, research questions, resources, and writing in English and French. The included content is fictional and is intended to be replaced.
 
+**See it in practice:** [mkante.ml](https://mkante.ml) is Mahamadou Kante's live academic website built with Arvel Scholar.
+
 ## Theme lineage
 
 Arvel Scholar combines original customization with ideas and code derived from:
@@ -41,7 +43,7 @@ Open the address printed by Hugo, normally `http://localhost:1313/`.
 
 ## Customize the template
 
-1. Replace `Alex Scholar`, `alex@example.org`, and `https://example.org` in `config.yml`.
+1. Replace `Arvel Scholar`, `hello@example.org`, and `https://example.org` in `config.yml`.
 2. Update the biography in `content/en/about/` and `content/fr/about/`.
 3. Replace the fictional examples under `content/en/` and `content/fr/`.
 4. Replace `static/assets/social-preview.png` and `static/assets/favicon-books.png` with your branding.

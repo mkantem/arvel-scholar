@@ -2,4 +2,4 @@
 title = "About"
 +++
 
-Alex Scholar is a researcher interested in technology, institutions, and society. Replace this page with a concise biography, research interests, affiliations, and contact information.
+Arvel Scholar is the demonstration identity for this template. Replace this page with your biography, research interests, affiliations, and contact information.

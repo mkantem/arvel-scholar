@@ -28,13 +28,13 @@ languages:
         - { name: Blog, url: writing/, weight: 50 }
         - { name: Search, url: search/, weight: 60 }
     params:
-      description: Academic website of Alex Scholar.
-      author: Alex Scholar
-      label: { text: Alex Scholar, icon: assets/favicon-books.png, iconHeight: 18 }
+      description: Arvel Scholar is a bilingual academic website template for researchers.
+      author: Arvel Scholar
+      label: { text: Arvel Scholar, icon: assets/favicon-books.png, iconHeight: 18 }
       profileMode:
         enabled: true
-        title: Alex Scholar
-        subtitle: Researcher studying how technology shapes people, institutions, and society.
+        title: Arvel Scholar
+        subtitle: A bilingual academic website template for sharing papers, projects, questions, resources, and writing.
         buttons:
           - { name: Papers, url: papers/ }
           - { name: Projects, url: projects/ }
@@ -55,13 +55,13 @@ languages:
         - { name: Blog, url: writing/, weight: 50 }
         - { name: Recherche, url: search/, weight: 60 }
     params:
-      description: Site académique d’Alex Scholar.
-      author: Alex Scholar
-      label: { text: Alex Scholar, icon: assets/favicon-books.png, iconHeight: 18 }
+      description: Arvel Scholar est un modèle de site académique bilingue pour les chercheurs.
+      author: Arvel Scholar
+      label: { text: Arvel Scholar, icon: assets/favicon-books.png, iconHeight: 18 }
       profileMode:
         enabled: true
-        title: Alex Scholar
-        subtitle: Chercheur·e étudiant la manière dont la technologie transforme les personnes, les institutions et la société.
+        title: Arvel Scholar
+        subtitle: Un modèle de site académique bilingue pour partager articles, projets, questions, ressources et écrits.
         buttons:
           - { name: Articles, url: papers/ }
           - { name: Projets, url: projects/ }
@@ -93,7 +93,7 @@ params:
     apple_touch_icon: assets/favicon-books.png
   cover: { hiddenInList: false, hiddenInSingle: true }
   socialIcons:
-    - { name: Email, url: "mailto:alex@example.org" }
+    - { name: Email, url: "mailto:hello@example.org" }
     - { name: googlescholar, title: Google Scholar, url: "https://scholar.google.com/" }
     - { name: orcid, title: ORCID, url: "https://orcid.org/" }
 markup:
