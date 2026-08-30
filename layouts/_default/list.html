@@ -1,0 +1,456 @@
+{{- define "main" }}
+{{- $filePath := "" -}}
+{{- with .File }}{{- $filePath = .Path -}}{{- end -}}
+{{- $isFailuresSection := and (eq .Section "projects") (in .RelPermalink "/projects/failures/") -}}
+{{- $isProjectsSection := and (eq .Section "projects") (eq .Kind "section") (not $isFailuresSection) -}}
+{{- $isQuestionsSection := and (eq .Section "questions") (eq .Kind "section") -}}
+{{- $isResourcesSection := and (eq .Section "resources") (eq .Kind "section") -}}
+{{- $isFrench := eq .Lang "fr" -}}
+
+{{- if (and site.Params.profileMode.enabled .IsHome) }}
+{{- partial "index_profile.html" . }}
+{{- else if $isFailuresSection }}
+<header class="page-header failures-header">
+  {{- partial "breadcrumbs.html" . }}
+  <h1>{{ .Title }}</h1>
+</header>
+
+{{- if .Content }}
+<div class="post-content failures-intro">
+  {{ .Content }}
+</div>
+{{- end }}
+
+{{- $pages := .RegularPages.ByDate.Reverse }}
+{{- $grouped := $pages.GroupByDate "2006" }}
+
+<section class="failures-ledger">
+  {{- range $grouped }}
+  <div class="failures-year-group">
+    <div class="failures-year">{{ .Key }}</div>
+    <div class="failures-entries">
+      {{- range .Pages }}
+      {{- $entryType := .Params.entry_type | default .Params.type }}
+      <article class="failure-entry">
+        <div class="failure-date">{{ .Params.displayDate | default (.Date.Format "Jan 2") }}</div>
+        <div class="failure-main">
+          <h2 class="failure-title">
+            <a href="{{ .Permalink }}">
+              <span class="failure-title-icon">
+                {{- if or (eq $entryType "Grant") (eq $entryType "Subvention") -}}¤
+                {{- else if or (eq $entryType "Conference") (eq $entryType "Conférence") -}}◌
+                {{- else if or (eq $entryType "Fellowship") (eq $entryType "Bourse") -}}○
+                {{- else if or (eq $entryType "Job") (eq $entryType "Poste") -}}□
+                {{- else if or (eq $entryType "Mobility") (eq $entryType "Mobilité") -}}→
+                {{- else if eq $entryType "Programme" -}}◇
+                {{- else -}}·
+                {{- end -}}
+              </span>{{ .Title }}
+            </a>
+          </h2>
+          <p class="failure-venue">{{ .Params.venue }}</p>
+          {{- with .Params.note }}
+          <p class="failure-note">{{ . }}</p>
+          {{- end }}
+          {{- with .Params.outcome }}
+          <p class="failure-outcome">{{ cond $isFrench "Suite donnee :" "What happened next:" }} {{ . }}</p>
+          {{- end }}
+          {{- if or .Params.note .Params.outcome }}
+          <details class="failure-details">
+            <summary>{{ cond $isFrench "Détails" "Details" }}</summary>
+            {{- with .Params.note }}<p>{{ . }}</p>{{- end }}
+            {{- with .Params.outcome }}<p><strong>{{ cond $isFrench "Suite donnée :" "What happened next:" }}</strong> {{ . }}</p>{{- end }}
+          </details>
+          {{- end }}
+        </div>
+        <div class="failure-meta">
+          <span class="failure-chip failure-type">{{ $entryType }}</span>
+          <span class="failure-chip failure-status">{{ .Params.status }}</span>
+        </div>
+      </article>
+      {{- end }}
+    </div>
+  </div>
+  {{- end }}
+</section>
+{{- else if $isProjectsSection }}
+{{- $projectPages := .RegularPages.ByTitle -}}
+{{- $researchProjects := where $projectPages "Title" "not in" (slice "Teaching") -}}
+{{- $teachingPage := where $projectPages "Title" "in" (slice "Teaching") -}}
+{{- $failuresPage := site.GetPage "/projects/failures" -}}
+<header class="page-header projects-header">
+  {{- partial "breadcrumbs.html" . }}
+  <h1>{{ .Title }}</h1>
+</header>
+
+{{- if .Content }}
+<div class="post-content projects-intro">
+  {{ .Content }}
+</div>
+{{- end }}
+
+<section class="projects-library">
+  <div class="projects-group">
+    <div class="section-heading">
+      <h2>{{ cond $isFrench "Recherche et initiatives" "Research and initiatives" }}</h2>
+      <span class="taxonomy-summary">{{ len $researchProjects }} pages</span>
+    </div>
+    <div class="projects-grid">
+      {{- range $researchProjects }}
+      <article class="project-card">
+        <div class="project-card-meta">
+          {{ with .Params.project_type }}<span class="project-chip">{{ . }}</span>{{ end }}
+          {{ with .Params.project_status }}<span class="project-chip project-chip-status">{{ . }}</span>{{ end }}
+        </div>
+        <h3><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
+        {{ with .Summary }}<p>{{ . | plainify | htmlUnescape }}</p>{{ end }}
+      </article>
+      {{- end }}
+    </div>
+  </div>
+
+  {{- if gt (len $teachingPage) 0 }}
+  <div class="projects-group">
+    <div class="section-heading">
+      <h2>{{ cond $isFrench "Enseignement et formation" "Teaching and training" }}</h2>
+    </div>
+    <div class="projects-grid">
+      {{- range $teachingPage }}
+      <article class="project-card">
+        <div class="project-card-meta">
+          {{ with .Params.project_type }}<span class="project-chip">{{ . }}</span>{{ end }}
+          {{ with .Params.project_status }}<span class="project-chip project-chip-status">{{ . }}</span>{{ end }}
+        </div>
+        <h3><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
+        {{ with .Summary }}<p>{{ . | plainify | htmlUnescape }}</p>{{ end }}
+      </article>
+      {{- end }}
+    </div>
+  </div>
+  {{- end }}
+
+  {{- with $failuresPage }}
+  <div class="projects-group">
+    <div class="section-heading">
+      <h2>{{ cond $isFrench "Pages reflexives" "Reflective pages" }}</h2>
+    </div>
+    <div class="projects-grid">
+      <article class="project-card">
+        <div class="project-card-meta">
+          <span class="project-chip">{{ cond $isFrench "Page reflexive" "Reflective page" }}</span>
+          <span class="project-chip project-chip-status">{{ cond $isFrench "Archive vivante" "Living record" }}</span>
+        </div>
+        <h3><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
+        {{ with .Summary }}<p>{{ . | plainify | htmlUnescape }}</p>{{ end }}
+      </article>
+    </div>
+  </div>
+  {{- end }}
+</section>
+{{- else if $isQuestionsSection }}
+{{- $questions := .RegularPages.ByTitle -}}
+{{- $categoryTaxonomy := site.Taxonomies.categories -}}
+{{- $tagTaxonomy := site.Taxonomies.tags -}}
+{{- $themeLabels := site.Data.questions.themes -}}
+{{- $themeOrder := site.Data.questions.theme_order -}}
+{{- $categoryTitles := site.Data.questions.category_titles -}}
+{{- $tagTitles := site.Data.questions.tag_titles -}}
+<div class="questions-shell">
+  <div class="questions-layout">
+    {{ partial "questions_sidebar.html" . }}
+
+    <div class="questions-content">
+      <header class="page-header questions-header">
+        {{ partial "breadcrumbs.html" . }}
+        <h1>{{ .Title }}</h1>
+        {{ with .Content }}
+          <div class="post-content">{{ . }}</div>
+        {{ end }}
+      </header>
+
+      <section class="questions-overview">
+        <article class="questions-stat">
+          <span class="questions-stat-label">{{ cond $isFrench "Questions" "Questions" }}</span>
+          <strong>{{ len $questions }}</strong>
+        </article>
+        <article class="questions-stat">
+          <span class="questions-stat-label">{{ cond $isFrench "Catégories" "Categories" }}</span>
+          <strong>{{ len $categoryTaxonomy }}</strong>
+        </article>
+        <article class="questions-stat">
+          <span class="questions-stat-label">{{ cond $isFrench "Étiquettes" "Tags" }}</span>
+          <strong>{{ len $tagTaxonomy }}</strong>
+        </article>
+      </section>
+
+      {{ if $categoryTaxonomy }}
+        <section class="questions-library">
+          <div class="section-heading">
+            <h2>{{ cond $isFrench "Parcourir par catégorie" "Browse by category" }}</h2>
+            <a href="{{ "/categories/" | relURL }}">{{ cond $isFrench "Toutes les catégories" "All categories" }}</a>
+          </div>
+          {{ range $themeOrder }}
+            {{ $theme := . }}
+            {{ $themeCategories := slice }}
+            {{ range $name, $taxonomy := $categoryTaxonomy }}
+              {{ $matchesTheme := false }}
+              {{ range $taxonomy.Pages }}
+                {{ with .File }}
+                  {{ $base := .ContentBaseName }}
+                  {{ if or (hasPrefix $base (printf "%s-" $theme)) (and (eq $theme "health-well-being") (hasPrefix $base "health-well-being-")) }}
+                    {{ $matchesTheme = true }}
+                  {{ end }}
+                {{ end }}
+              {{ end }}
+              {{ if $matchesTheme }}
+                {{ with site.GetPage (printf "/categories/%s" $name) }}
+                  {{ $themeCategories = $themeCategories | append (dict "page" . "count" (len $taxonomy.Pages) "name" $name "pages" $taxonomy.Pages) }}
+                {{ end }}
+              {{ end }}
+            {{ end }}
+            {{ if gt (len $themeCategories) 0 }}
+              <section class="questions-theme-group">
+                <div class="section-heading">
+                  <h3>{{ index $themeLabels $theme | default ($theme | title) }}</h3>
+                </div>
+                <div class="questions-category-grid">
+                  {{ range sort $themeCategories "page.Title" }}
+                    <article class="questions-category-card">
+                      <h3><a href="{{ .page.RelPermalink }}">{{ index $categoryTitles .name | default .page.Title }}</a></h3>
+                      <p>{{ .count }} question{{ if ne .count 1 }}s{{ end }}</p>
+                      <ul>
+                        {{ range first 3 (.pages.ByTitle) }}
+                          <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
+                        {{ end }}
+                      </ul>
+                    </article>
+                  {{ end }}
+                </div>
+              </section>
+            {{ end }}
+          {{ end }}
+        </section>
+      {{ end }}
+
+      {{ if $tagTaxonomy }}
+        <section class="questions-library">
+          <div class="section-heading">
+            <h2>{{ cond $isFrench "Parcourir par étiquette" "Browse by tag" }}</h2>
+            <a href="{{ "/tags/" | relURL }}">{{ cond $isFrench "Toutes les étiquettes" "All tags" }}</a>
+          </div>
+          <div class="questions-tag-list">
+            {{ range $name, $taxonomy := $tagTaxonomy }}
+              {{ with site.GetPage (printf "/tags/%s" $name) }}
+                <a class="questions-tag-pill" href="{{ .RelPermalink }}">{{ index $tagTitles $name | default .Title }} <span>{{ len $taxonomy.Pages }}</span></a>
+              {{ end }}
+            {{ end }}
+          </div>
+        </section>
+      {{ end }}
+    </div>
+  </div>
+</div>
+{{- else if $isResourcesSection }}
+{{- $resourcesHome := site.GetPage "/resources" -}}
+{{- $groupOrder := site.Data.resources.group_order -}}
+{{- $groupTitles := site.Data.resources.group_titles -}}
+{{- $groupDescriptions := site.Data.resources.group_descriptions -}}
+{{- $resourcePages := where site.Pages "Section" "resources" -}}
+{{- $resourcePages = where $resourcePages "Kind" "in" (slice "page" "section") -}}
+{{- $isResourcesHome := and $resourcesHome (eq .RelPermalink $resourcesHome.RelPermalink) -}}
+<div class="resources-shell">
+  <div class="resources-layout">
+    {{ partial "resources_sidebar.html" . }}
+
+    <div class="resources-content">
+      <header class="page-header resources-header">
+        {{ partial "breadcrumbs.html" . }}
+        <h1>{{ .Title }}</h1>
+        {{ with .Content }}
+          <div class="post-content">{{ . }}</div>
+        {{ end }}
+      </header>
+
+      {{ if $isResourcesHome }}
+        <section class="resources-overview">
+          <article class="resources-stat">
+            <span class="resources-stat-label">{{ cond $isFrench "Guides" "Guides" }}</span>
+            <strong>{{ len (where site.RegularPages "Section" "resources") }}</strong>
+          </article>
+          <article class="resources-stat">
+            <span class="resources-stat-label">{{ cond $isFrench "Images" "Images" }}</span>
+            <strong>98</strong>
+          </article>
+          <article class="resources-stat">
+            <span class="resources-stat-label">{{ cond $isFrench "Langue" "Language" }}</span>
+            <strong>{{ cond $isFrench "Français" "English" }}</strong>
+          </article>
+        </section>
+
+        <section class="resources-library">
+          <div class="section-heading">
+            <h2>{{ cond $isFrench "Parcourir les ressources" "Browse resources" }}</h2>
+          </div>
+          <div class="resources-group-grid">
+            {{ range $groupOrder }}
+              {{ $group := . }}
+              {{ $groupPages := where $resourcePages "RelPermalink" "like" (printf "/resources/%s/*" $group) }}
+              {{ if gt (len $groupPages) 0 }}
+                {{ $rootPages := where $groupPages "Params.parent" nil }}
+                <article class="resources-group-card">
+                  {{ $groupTitle := index $groupTitles $group | default ($group | title) }}
+                  {{ $groupDescription := index $groupDescriptions $group }}
+                  {{ if not $isFrench }}
+                    {{ if eq $group "bibliographie" }}
+                      {{ $groupTitle = "Bibliography Management Tools" }}
+                      {{ $groupDescription = "Guides and tutorials for reference managers, citation workflows, and research indicators." }}
+                    {{ else if eq $group "programming" }}
+                      {{ $groupTitle = "Learning to Program" }}
+                      {{ $groupDescription = "Teaching resources for getting started with programming, exploring languages, and finding useful tools." }}
+                    {{ else if eq $group "workshop" }}
+                      {{ $groupTitle = "Language Processing and Social Media" }}
+                      {{ $groupDescription = "Workshop modules on scraping, text analysis, social networks, AI, and ethics." }}
+                    {{ end }}
+                  {{ end }}
+                  <h3>{{ $groupTitle }}</h3>
+                  <p>{{ $groupDescription }}</p>
+                  <ul>
+                    {{ range first 5 (sort $rootPages "Params.nav_order" "asc") }}
+                      <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
+                    {{ end }}
+                  </ul>
+                </article>
+              {{ end }}
+            {{ end }}
+          </div>
+        </section>
+      {{ else }}
+        {{ $children := .Pages }}
+        {{ if gt (len $children) 0 }}
+          <section class="resources-library">
+            <div class="section-heading">
+              <h2>{{ cond $isFrench "Contenu de cette section" "Contents of this section" }}</h2>
+              <span class="taxonomy-summary">{{ len $children }} page{{ if ne (len $children) 1 }}s{{ end }}</span>
+            </div>
+            <div class="resources-group-grid">
+              {{ range $children.ByTitle }}
+                <article class="resources-group-card">
+                  <h3><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
+                  {{ with .Summary }}
+                    <p>{{ . | plainify | htmlUnescape }}</p>
+                  {{ end }}
+                </article>
+              {{ end }}
+            </div>
+          </section>
+        {{ end }}
+      {{ end }}
+    </div>
+  </div>
+</div>
+{{- else }} {{/* if not profileMode */}}
+
+{{- if not .IsHome | and .Title }}
+<header class="page-header">
+  {{- partial "breadcrumbs.html" . }}
+  <h1>
+    {{- if (eq .Kind `term`) }}
+    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" stroke-width="2" fill="currentColor" class="bi bi-tag" viewBox="0 0 16 14"> <path d="M6 4.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm-1 0a.5.5 0 1 0-1 0 .5.5 0 0 0 1 0z"/> <path d="M2 1h4.586a1 1 0 0 1 .707.293l7 7a1 1 0 0 1 0 1.414l-4.586 4.586a1 1 0 0 1-1.414 0l-7-7A1 1 0 0 1 1 6.586V2a1 1 0 0 1 1-1zm0 5.586 7 7L13.586 9l-7-7H2v4.586z"/> </svg>&nbsp; {{ .Title }}
+    {{- end}}
+  </h1>
+</header>
+{{- end }}
+
+{{- if .Content }}
+<div class="post-content">
+  {{- if not (.Param "disableAnchoredHeadings") }}
+  {{- partial "anchored_headings.html" .Content -}}
+  {{- else }}{{ .Content }}{{ end }}
+</div>
+{{- end }}
+
+{{- $pages := union .RegularPages .Sections }}
+
+{{- if .IsHome }}
+{{- $pages = where site.RegularPages "Type" "in" site.Params.mainSections }}
+{{- $pages = where $pages "Params.hiddenInHomeList" "!=" "true"  }}
+{{- end }}
+
+{{- $paginator := .Paginate $pages }}
+
+{{- if and .IsHome site.Params.homeInfoParams (eq $paginator.PageNumber 1) }}
+{{- partial "home_info.html" . }}
+{{- end }}
+
+{{- $term := .Data.Term }}
+{{- range $index, $page := $paginator.Pages }}
+
+{{- $class := "post-entry" }}
+
+{{- $user_preferred := or site.Params.disableSpecial1stPost site.Params.homeInfoParams }}
+{{- if (and $.IsHome (eq $paginator.PageNumber 1) (eq $index 0) (not $user_preferred)) }}
+{{- $class = "first-entry" }}
+{{- else if $term }}
+{{- $class = "post-entry tag-entry" }}
+{{- end }}
+
+<article class="{{ $class }}">
+  {{- $isHidden := (.Param "cover.hiddenInList") | default (.Param "cover.hidden") | default false }}
+  {{- partial "cover.html" (dict "cxt" . "IsSingle" false "isHidden" $isHidden) }}
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">
+      {{- .Title }}
+      {{- if .Draft }}
+      <span class="entry-hint" title="Draft">
+        <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" fill="currentColor">
+          <path
+            d="M160-410v-60h300v60H160Zm0-165v-60h470v60H160Zm0-165v-60h470v60H160Zm360 580v-123l221-220q9-9 20-13t22-4q12 0 23 4.5t20 13.5l37 37q9 9 13 20t4 22q0 11-4.5 22.5T862.09-380L643-160H520Zm300-263-37-37 37 37ZM580-220h38l121-122-18-19-19-18-122 121v38Zm141-141-19-18 37 37-18-19Z" />
+        </svg>
+      </span>
+      {{- end }}
+    </h2>
+  </header>
+  {{- if (ne (.Param "hideSummary") true) }}
+  <div class="entry-content">
+    <p>{{ .Summary | plainify | htmlUnescape }}{{ if .Truncated }}...{{ end }}</p>
+  </div>
+  {{- end }}
+  {{- if not (.Param "hideMeta") }}
+  <footer class="entry-footer">
+    {{- if eq .Section "projects" -}}
+    {{- partial "projects_post_meta.html" . -}}
+    {{- else -}}
+    {{- partial "post_meta.html" . -}}
+    {{- end -}}
+  </footer>
+  {{- end }}
+  <a class="entry-link" aria-label="post link to {{ .Title | plainify }}" href="{{ .Permalink }}"></a>
+</article>
+{{- end }}
+
+{{- if gt $paginator.TotalPages 1 }}
+<footer class="page-footer">
+  <nav class="pagination">
+    {{- if $paginator.HasPrev }}
+    <a class="prev" href="{{ $paginator.Prev.URL | absURL }}">
+      «&nbsp;{{ i18n "prev_page" }}&nbsp;
+      {{- if (.Param "ShowPageNums") }}
+      {{- sub $paginator.PageNumber 1 }}/{{ $paginator.TotalPages }}
+      {{- end }}
+    </a>
+    {{- end }}
+    {{- if $paginator.HasNext }}
+    <a class="next" href="{{ $paginator.Next.URL | absURL }}">
+      {{- i18n "next_page" }}&nbsp;
+      {{- if (.Param "ShowPageNums") }}
+      {{- add 1 $paginator.PageNumber }}/{{ $paginator.TotalPages }}
+      {{- end }}&nbsp;»
+    </a>
+    {{- end }}
+  </nav>
+</footer>
+{{- end }}
+
+{{- end }}{{/* end profileMode */}}
+
+{{- end }}{{- /* end main */ -}}

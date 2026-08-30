@@ -1,0 +1,9 @@
+{{- $baseURL := site.Params.productionBaseURL | default site.BaseURL -}}
+{{- $defaultLang := "en" -}}
+{{- $threadPage := . -}}
+{{- range .Translations -}}
+  {{- if eq .Lang $defaultLang -}}
+    {{- $threadPage = . -}}
+  {{- end -}}
+{{- end -}}
+{{- return (printf "%s%s" $baseURL $threadPage.RelPermalink) -}}

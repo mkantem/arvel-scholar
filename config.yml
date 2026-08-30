@@ -1,0 +1,103 @@
+baseURL: /
+title: Arvel Scholar
+theme: PaperMod
+defaultContentLanguage: en
+defaultContentLanguageInSubdir: false
+enableInlineShortcodes: true
+enableRobotsTXT: true
+relativeURLs: true
+pagination:
+  pagerSize: 20
+outputs:
+  home: [HTML, RSS, JSON]
+taxonomies:
+  tag: tags
+  category: categories
+languages:
+  en:
+    languageName: English
+    languageCode: en-US
+    contentDir: content/en
+    weight: 1
+    menu:
+      main:
+        - { name: Papers, url: papers/, weight: 10 }
+        - { name: Projects, url: projects/, weight: 20 }
+        - { name: Questions, url: questions/, weight: 30 }
+        - { name: Resources, url: resources/, weight: 40 }
+        - { name: Blog, url: writing/, weight: 50 }
+        - { name: Search, url: search/, weight: 60 }
+    params:
+      description: Academic website of Alex Scholar.
+      author: Alex Scholar
+      label: { text: Alex Scholar, icon: assets/favicon-books.png, iconHeight: 18 }
+      profileMode:
+        enabled: true
+        title: Alex Scholar
+        subtitle: Researcher studying how technology shapes people, institutions, and society.
+        buttons:
+          - { name: Papers, url: papers/ }
+          - { name: Projects, url: projects/ }
+          - { name: Questions, url: questions/ }
+          - { name: Resources, url: resources/ }
+          - { name: Blog, url: writing/ }
+  fr:
+    languageName: Français
+    languageCode: fr-FR
+    contentDir: content/fr
+    weight: 2
+    menu:
+      main:
+        - { name: Articles, url: papers/, weight: 10 }
+        - { name: Projets, url: projects/, weight: 20 }
+        - { name: Questions, url: questions/, weight: 30 }
+        - { name: Ressources, url: resources/, weight: 40 }
+        - { name: Blog, url: writing/, weight: 50 }
+        - { name: Recherche, url: search/, weight: 60 }
+    params:
+      description: Site académique d’Alex Scholar.
+      author: Alex Scholar
+      label: { text: Alex Scholar, icon: assets/favicon-books.png, iconHeight: 18 }
+      profileMode:
+        enabled: true
+        title: Alex Scholar
+        subtitle: Chercheur·e étudiant la manière dont la technologie transforme les personnes, les institutions et la société.
+        buttons:
+          - { name: Articles, url: papers/ }
+          - { name: Projets, url: projects/ }
+          - { name: Questions, url: questions/ }
+          - { name: Ressources, url: resources/ }
+          - { name: Blog, url: writing/ }
+params:
+  productionBaseURL: https://example.org
+  images: [/assets/social-preview.png]
+  defaultTheme: auto
+  disableThemeToggle: false
+  hideFooter: false
+  ShowShareButtons: true
+  ShowReadingTime: true
+  disableSpecial1stPost: true
+  disableAnchoredHeadings: true
+  ShowPostNavLinks: false
+  ShowBreadCrumbs: false
+  ShowCodeCopyButtons: true
+  MainSections: [papers, questions, resources, writing]
+  ShowToc: false
+  disableScrollToTop: true
+  TocOpen: true
+  assets:
+    disableScrollBarStyle: true
+    favicon: assets/favicon-books.png
+    favicon16x16: assets/favicon-books.png
+    favicon32x32: assets/favicon-books.png
+    apple_touch_icon: assets/favicon-books.png
+  cover: { hiddenInList: false, hiddenInSingle: true }
+  socialIcons:
+    - { name: Email, url: "mailto:alex@example.org" }
+    - { name: googlescholar, title: Google Scholar, url: "https://scholar.google.com/" }
+    - { name: orcid, title: ORCID, url: "https://orcid.org/" }
+markup:
+  goldmark:
+    renderer: { unsafe: true }
+  highlight: { guessSyntax: true, style: autumn }
+  tableOfContents: { startLevel: 2, endLevel: 2, ordered: false }

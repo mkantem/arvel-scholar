@@ -1,0 +1,82 @@
+{{ define "main" }}
+  {{ $isFrench := eq .Site.Language.Lang "fr" }}
+  <article class="post-single paper-single">
+    <header class="post-header papers-header">
+      {{ partial "breadcrumbs.html" . }}
+      <div class="paper-card-meta">
+        {{ with .Params.status }}
+          {{ $statusLabel := . }}
+          {{ $statusClass := "" }}
+          {{ $statusKey := lower (plainify $statusLabel) }}
+          {{ if or (eq $statusKey "published") (eq $statusKey "publié") (eq $statusKey "publie") }}
+            {{ $statusClass = "published" }}
+          {{ else if or (eq $statusKey "preprint") (eq $statusKey "prépublication") (eq $statusKey "prepublication") }}
+            {{ $statusClass = "preprint" }}
+          {{ else if or (eq $statusKey "working paper") (eq $statusKey "document de travail") }}
+            {{ $statusClass = "working-paper" }}
+          {{ else }}
+            {{ $statusClass = anchorize $statusLabel }}
+          {{ end }}
+          <span class="paper-status paper-status-{{ $statusClass }}">{{ $statusLabel }}</span>
+        {{ end }}
+        {{ with .Params.publication_type }}
+          <span class="paper-type">{{ . }}</span>
+        {{ end }}
+      </div>
+      <h1 class="post-title">{{ .Title }}</h1>
+      {{ with .Params.publication }}
+        <p class="paper-venue">{{ . }}</p>
+      {{ end }}
+      {{ with .Params.authors }}
+        <p class="paper-authors">{{ delimit . ", " }}</p>
+      {{ end }}
+      {{ partial "paper_actions.html" . }}
+    </header>
+
+    <section id="abstract" class="paper-panel">
+      <div class="section-heading">
+        <h2>{{ cond $isFrench "Résumé" "Abstract" }}</h2>
+      </div>
+      <div class="post-content">
+        {{ .Content }}
+      </div>
+    </section>
+
+    {{ if or .Params.citation .Params.bibtex }}
+      <section id="citation" class="paper-panel">
+        <div class="section-heading">
+          <h2>{{ cond $isFrench "Citation" "Citation" }}</h2>
+        </div>
+        <div class="paper-citation-layout">
+          {{ with .Params.citation }}
+            <div class="paper-citation-block">
+              <p class="paper-citation-label">{{ cond $isFrench "Citation recommandée" "Recommended citation" }}</p>
+              <p class="paper-citation">{{ . }}</p>
+            </div>
+          {{ end }}
+          {{ with .Params.bibtex }}
+            <details class="paper-bibtex">
+              <summary>{{ cond $isFrench "BibTeX" "BibTeX" }}</summary>
+              <pre><code>{{ . }}</code></pre>
+            </details>
+          {{ end }}
+        </div>
+      </section>
+    {{ end }}
+
+    {{ with .Params.links }}
+      <section class="paper-panel">
+        <div class="section-heading">
+          <h2>{{ cond $isFrench "Liens" "Links" }}</h2>
+        </div>
+        <div class="paper-links">
+          {{ range . }}
+            <a class="paper-action" href="{{ .url }}" target="_blank" rel="noopener noreferrer">{{ .label }}</a>
+          {{ end }}
+        </div>
+      </section>
+    {{ end }}
+
+    {{- partial "comments.html" . }}
+  </article>
+{{ end }}

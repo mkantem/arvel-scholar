@@ -1,0 +1,33 @@
+{{ define "main" }}
+  {{ $isFrench := eq .Site.Language.Lang "fr" }}
+  <div class="questions-shell">
+    <div class="questions-layout">
+      {{ partial "questions_sidebar.html" . }}
+
+      <div class="questions-content">
+        <header class="page-header questions-header">
+          {{ partial "breadcrumbs.html" . }}
+          <h1>{{ .Title }}</h1>
+          <p class="taxonomy-summary">{{ len .Pages }} {{ cond $isFrench "entrée" "entry" }}{{ if ne (len .Pages) 1 }}{{ cond $isFrench "s" "ies" }}{{ end }}</p>
+        </header>
+
+        <div class="questions-entry-list">
+          {{ range .Pages.ByTitle }}
+            <article class="post-entry questions-entry">
+              <header class="entry-header">
+                <h2 class="entry-hint-parent">{{ .Title }}</h2>
+              </header>
+              <div class="entry-content">
+                <p>{{ .Summary | plainify | htmlUnescape }}</p>
+              </div>
+              <footer class="entry-footer">
+                {{- partial "post_meta.html" . -}}
+              </footer>
+              <a class="entry-link" aria-label="entry link to {{ .Title | plainify }}" href="{{ .RelPermalink }}"></a>
+            </article>
+          {{ end }}
+        </div>
+      </div>
+    </div>
+  </div>
+{{ end }}

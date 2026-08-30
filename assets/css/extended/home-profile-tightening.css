@@ -1,0 +1,15 @@
+.profile .profile_inner > span {
+    margin-bottom: 0.35rem;
+}
+
+.profile .social-icons {
+    margin-top: 0.1rem;
+}
+
+.profile .buttons {
+    margin-top: 0.25rem;
+}
+
+.profile .button {
+    margin-bottom: 0;
+}

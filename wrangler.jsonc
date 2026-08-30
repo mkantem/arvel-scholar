@@ -1,0 +1,7 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "arvel-scholar",
+  "compatibility_date": "2026-04-19",
+  "assets": { "directory": "./public" },
+  "observability": { "enabled": false }
+}

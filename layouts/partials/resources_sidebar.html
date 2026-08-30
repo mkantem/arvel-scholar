@@ -1,0 +1,77 @@
+{{ $current := . }}
+{{ $isFrench := eq .Lang "fr" }}
+{{ $resourcesSection := site.GetPage "/resources" }}
+{{ $pages := where site.Pages "Section" "resources" }}
+{{ $pages = where $pages "Kind" "in" (slice "page" "section") }}
+{{ $pages = where $pages "Lang" .Lang }}
+{{ $groupOrder := site.Data.resources.group_order }}
+{{ $groupTitles := site.Data.resources.group_titles }}
+{{ $isResourcesOverview := false }}
+
+{{ with $resourcesSection }}
+  {{ $isResourcesOverview = eq $current.RelPermalink .RelPermalink }}
+{{ end }}
+
+<aside class="resources-sidebar">
+  <div class="resources-sidebar-block">
+    <p class="resources-sidebar-label">{{ cond $isFrench "Ressources" "Resources" }}</p>
+    {{ with $resourcesSection }}
+      <a class="resources-sidebar-link{{ if $isResourcesOverview }} is-active{{ end }}" href="{{ .RelPermalink }}">{{ cond $isFrench "Aperçu" "Overview" }}</a>
+    {{ end }}
+  </div>
+
+  {{ range $groupOrder }}
+    {{ $group := . }}
+    {{ $groupPrefix := printf "%s%s/" $resourcesSection.RelPermalink $group }}
+    {{ $groupPages := where $pages "RelPermalink" "like" (printf "%s*" $groupPrefix) }}
+    {{ if gt (len $groupPages) 0 }}
+      {{ $rootPages := where $groupPages "Params.parent" nil }}
+      {{ $isCurrentGroup := hasPrefix $current.RelPermalink $groupPrefix }}
+      <div class="resources-sidebar-block">
+        <details class="resources-sidebar-group" {{ if $isCurrentGroup }}open{{ end }}>
+          <summary class="resources-sidebar-label resources-sidebar-summary">
+            {{ if $isFrench }}
+              {{ index $groupTitles $group | default ($group | title) }}
+            {{ else if eq $group "bibliographie" }}
+              Bibliography Management Tools
+            {{ else if eq $group "programming" }}
+              Learning to Program
+            {{ else if eq $group "workshop" }}
+              Language Processing and Social Media
+            {{ else }}
+              {{ $group | title }}
+            {{ end }}
+          </summary>
+          <div class="resources-sidebar-items">
+            {{ range sort $rootPages "Params.nav_order" "asc" }}
+              {{ $root := . }}
+              {{ $children := where $groupPages "Params.parent" $root.Title }}
+              {{ if or (gt (len $children) 0) (eq $current.RelPermalink $root.RelPermalink) }}
+                <div class="resources-sidebar-children">
+                  <a class="resources-sidebar-link resources-sidebar-link-child{{ if eq $current.RelPermalink $root.RelPermalink }} is-active{{ end }}" href="{{ $root.RelPermalink }}">{{ cond $isFrench "Introduction" "Introduction" }}</a>
+                  {{ range sort $children "Params.nav_order" "asc" }}
+                    {{ $child := . }}
+                    <a class="resources-sidebar-link resources-sidebar-link-child{{ if eq $current.RelPermalink .RelPermalink }} is-active{{ end }}" href="{{ .RelPermalink }}">{{ .Title }}</a>
+                    {{ $grandchildren := where $groupPages "Params.parent" $child.Title }}
+                    {{ if and (eq $group "workshop") (eq (len $grandchildren) 0) }}
+                      {{ $childPath := path.Dir $child.File.Path }}
+                      {{ $grandchildren = where $groupPages "File.Dir" "eq" $childPath }}
+                      {{ $grandchildren = where $grandchildren "RelPermalink" "ne" $child.RelPermalink }}
+                    {{ end }}
+                    {{ if gt (len $grandchildren) 0 }}
+                      <div class="resources-sidebar-grandchildren">
+                        {{ range sort $grandchildren "Params.nav_order" "asc" }}
+                          <a class="resources-sidebar-link resources-sidebar-link-grandchild{{ if eq $current.RelPermalink .RelPermalink }} is-active{{ end }}" href="{{ .RelPermalink }}">{{ .Title }}</a>
+                        {{ end }}
+                      </div>
+                    {{ end }}
+                  {{ end }}
+                </div>
+              {{ end }}
+            {{ end }}
+          </div>
+        </details>
+      </div>
+    {{ end }}
+  {{ end }}
+</aside>

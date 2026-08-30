@@ -1,0 +1,51 @@
+{{ define "main" }}
+{{ $categoryTitles := site.Data.questions.category_titles }}
+{{ $tagTitles := site.Data.questions.tag_titles }}
+{{ $themeLabels := site.Data.questions.themes }}
+{{ $headings := findRE "<h[2-4].*?>(.|\\n])+?</h[2-4]>" .Content }}
+{{ $showLocalToc := ge (len $headings) 2 }}
+<div class="questions-shell">
+  <div class="questions-layout questions-layout-single">
+    {{ partial "questions_sidebar.html" . }}
+
+    <article class="post-single questions-single questions-content">
+      <header class="post-header">
+        {{ partial "breadcrumbs.html" . }}
+        <h1 class="post-title entry-hint-parent">{{ .Title }}</h1>
+        <div class="post-meta">
+          {{- partial "questions_post_meta.html" . -}}
+        </div>
+        {{ with .Params.categories }}
+          <ul class="questions-meta-list">
+            {{ range . }}
+              {{ with site.GetPage (printf "/categories/%s" .) }}
+                <li><a href="{{ .RelPermalink }}">{{ index $categoryTitles .Data.Term | default .Title }}</a></li>
+              {{ end }}
+            {{ end }}
+          </ul>
+        {{ end }}
+      </header>
+
+      {{ if $showLocalToc }}
+        <aside class="questions-local-toc">
+          {{ partial "toc.html" . }}
+        </aside>
+      {{ end }}
+
+      <div class="post-content">
+        {{ .Content }}
+      </div>
+
+      <footer class="post-footer">
+        <ul class="post-tags">
+          {{ range ($.GetTerms "tags") }}
+            <li><a href="{{ .RelPermalink }}">{{ index $tagTitles .Data.Term | default .LinkTitle }}</a></li>
+          {{ end }}
+        </ul>
+      </footer>
+
+      {{- partial "comments.html" . }}
+    </article>
+  </div>
+</div>
+{{ end }}

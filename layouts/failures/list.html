@@ -1,0 +1,68 @@
+{{- define "main" }}
+{{- $isFrench := eq .Lang "fr" -}}
+
+<header class="page-header failures-header">
+  {{- partial "breadcrumbs.html" . }}
+  <h1>{{ .Title }}</h1>
+</header>
+
+{{- if .Content }}
+<div class="post-content failures-intro">
+  {{ .Content }}
+</div>
+{{- end }}
+
+{{- $pages := .RegularPages.ByDate.Reverse }}
+{{- $grouped := $pages.GroupByDate "2006" }}
+
+<section class="failures-ledger">
+  {{- range $grouped }}
+  <div class="failures-year-group">
+    <div class="failures-year">{{ .Key }}</div>
+    <div class="failures-entries">
+      {{- range .Pages }}
+      {{- $entryType := .Params.entry_type | default .Params.type }}
+      <article class="failure-entry">
+        <div class="failure-date">{{ .Params.displayDate | default (.Date.Format "Jan 2") }}</div>
+        <div class="failure-main">
+          <h2 class="failure-title">
+            <a href="{{ .Permalink }}">
+              <span class="failure-title-icon">
+                {{- if or (eq $entryType "Grant") (eq $entryType "Subvention") -}}¤
+                {{- else if or (eq $entryType "Conference") (eq $entryType "Conférence") -}}◌
+                {{- else if or (eq $entryType "Fellowship") (eq $entryType "Bourse") -}}○
+                {{- else if or (eq $entryType "Job") (eq $entryType "Poste") -}}□
+                {{- else if or (eq $entryType "Mobility") (eq $entryType "Mobilité") -}}→
+                {{- else if eq $entryType "Programme" -}}◇
+                {{- else -}}·
+                {{- end -}}
+              </span>{{ .Title }}
+            </a>
+          </h2>
+          <p class="failure-venue">{{ .Params.venue }}</p>
+          {{- with .Params.note }}
+          <p class="failure-note">{{ . }}</p>
+          {{- end }}
+          {{- with .Params.outcome }}
+          <p class="failure-outcome">{{ cond $isFrench "Suite donnee :" "What happened next:" }} {{ . }}</p>
+          {{- end }}
+          {{- if or .Params.note .Params.outcome }}
+          <details class="failure-details">
+            <summary>{{ cond $isFrench "Détails" "Details" }}</summary>
+            {{- with .Params.note }}<p>{{ . }}</p>{{- end }}
+            {{- with .Params.outcome }}<p><strong>{{ cond $isFrench "Suite donnee :" "What happened next:" }}</strong> {{ . }}</p>{{- end }}
+          </details>
+          {{- end }}
+        </div>
+        <div class="failure-meta">
+          <span class="failure-chip failure-type">{{ $entryType }}</span>
+          <span class="failure-chip failure-status">{{ .Params.status }}</span>
+        </div>
+      </article>
+      {{- end }}
+    </div>
+  </div>
+  {{- end }}
+</section>
+
+{{- end }}

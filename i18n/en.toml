@@ -1,0 +1,65 @@
+[homeLabel]
+other = "Personal website"
+
+[sectionLabel]
+other = "Section"
+
+[questionsTitle]
+other = "Questions"
+
+[questionsSummary]
+other = "A structured space for study questions, prompts, and notes."
+
+[questionsOverview]
+other = "Overview"
+
+[categoriesLabel]
+other = "Categories"
+
+[tagsLabel]
+other = "Tags"
+
+[questionsTheme_decolonisation]
+other = "Decolonisation"
+
+[questionsTheme_determination]
+other = "Self-Determination"
+
+[questionsTheme_health-well-being]
+other = "Health and Well-Being"
+
+[questionsTheme_language]
+other = "Language"
+
+[questionsTheme_philosophy]
+other = "Philosophy"
+
+[questionsTheme_privacy]
+other = "Privacy"
+
+[questionsTheme_technology]
+other = "Technology"
+
+[resourcesTitle]
+other = "Resources"
+
+[resourcesSummary]
+other = "Guides, references, and curated materials presented with a document-like feel."
+
+[writingTitle]
+other = "Writing"
+
+[writingSummary]
+other = "Essays, reflections, and longer-form posts."
+
+[explore]
+other = "Explore"
+
+[emptySection]
+other = "This section is ready for content."
+
+[toggleTheme]
+other = "Toggle theme"
+
+[footerLine]
+other = "Built with Hugo for"

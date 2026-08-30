@@ -1,0 +1,75 @@
+{{ $questionsSection := site.GetPage "/questions" }}
+{{ $current := . }}
+{{ $questionPages := where (where site.RegularPages "Section" "questions") "Lang" .Lang }}
+{{ $themeOrder := site.Data.questions.theme_order }}
+{{ $isQuestionsOverview := false }}
+{{ $isCategoriesPage := false }}
+{{ $isTagsPage := false }}
+
+{{ with $questionsSection }}
+  {{ $isQuestionsOverview = eq $current.RelPermalink .RelPermalink }}
+{{ end }}
+{{ $isCategoriesPage = or (eq $current.Type "categories") (hasPrefix $current.RelPermalink "/categories/") }}
+{{ $isTagsPage = or (eq $current.Type "tags") (hasPrefix $current.RelPermalink "/tags/") }}
+{{ $isFrench := eq .Lang "fr" }}
+{{ $overviewLabel := cond $isFrench "Aperçu" "Overview" }}
+{{ $categoriesLabel := cond $isFrench "Catégories" "Categories" }}
+{{ $tagsLabel := cond $isFrench "Étiquettes" "Tags" }}
+
+<aside class="questions-sidebar">
+  <div class="questions-sidebar-block">
+    <p class="questions-sidebar-label">{{ cond $isFrench "Questions" "Questions" }}</p>
+    {{ with $questionsSection }}
+      <a class="questions-sidebar-link{{ if $isQuestionsOverview }} is-active{{ end }}" href="{{ .RelPermalink }}">{{ $overviewLabel }}</a>
+    {{ end }}
+    {{ with site.GetPage "/categories" }}
+      <a class="questions-sidebar-link{{ if $isCategoriesPage }} is-active{{ end }}" href="{{ .RelPermalink }}">{{ $categoriesLabel }}</a>
+    {{ end }}
+    {{ with site.GetPage "/tags" }}
+      <a class="questions-sidebar-link{{ if $isTagsPage }} is-active{{ end }}" href="{{ .RelPermalink }}">{{ $tagsLabel }}</a>
+    {{ end }}
+  </div>
+
+  {{ range $themeOrder }}
+    {{ $theme := . }}
+    {{ $themePages := where $questionPages "File.ContentBaseName" "like" (printf "%s-*" $theme) }}
+    {{ if gt (len $themePages) 0 }}
+      <div class="questions-sidebar-block">
+        {{ $isCurrentTheme := false }}
+        {{ with $current.File }}
+          {{ $isCurrentTheme = hasPrefix .ContentBaseName (printf "%s-" $theme) }}
+        {{ end }}
+        <details class="questions-sidebar-group" {{ if $isCurrentTheme }}open{{ end }}>
+          <summary class="questions-sidebar-label questions-sidebar-summary">
+            {{- if $isFrench -}}
+              {{- if eq $theme "decolonisation" -}}Décolonisation
+              {{- else if eq $theme "determination" -}}Autodétermination
+              {{- else if eq $theme "health-well-being" -}}Santé et bien-être
+              {{- else if eq $theme "language" -}}Langue
+              {{- else if eq $theme "philosophy" -}}Philosophie
+              {{- else if eq $theme "privacy" -}}Vie privée
+              {{- else if eq $theme "technology" -}}Technologie
+              {{- else -}}{{ $theme | title }}
+              {{- end -}}
+            {{- else -}}
+              {{- if eq $theme "decolonisation" -}}Decolonisation
+              {{- else if eq $theme "determination" -}}Self-Determination
+              {{- else if eq $theme "health-well-being" -}}Health and Well-Being
+              {{- else if eq $theme "language" -}}Language
+              {{- else if eq $theme "philosophy" -}}Philosophy
+              {{- else if eq $theme "privacy" -}}Privacy
+              {{- else if eq $theme "technology" -}}Technology
+              {{- else -}}{{ $theme | title }}
+              {{- end -}}
+            {{- end -}}
+          </summary>
+          <div class="questions-sidebar-items">
+            {{ range $themePages.ByTitle }}
+              <a class="questions-sidebar-link{{ if eq $current.RelPermalink .RelPermalink }} is-active{{ end }}" href="{{ .RelPermalink }}">{{ .Title }}</a>
+            {{ end }}
+          </div>
+        </details>
+      </div>
+    {{ end }}
+  {{ end }}
+</aside>

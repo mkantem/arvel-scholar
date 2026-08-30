@@ -1,0 +1,96 @@
+{{ define "main" }}
+  {{ $themeLabels := site.Data.questions.themes }}
+  {{ $categoryTitles := site.Data.questions.category_titles }}
+  {{ $isFrench := eq .Site.Language.Lang "fr" }}
+  {{ $pages := .Pages.ByTitle }}
+  {{ $themeKey := "" }}
+  {{ $termKey := "" }}
+  {{ $displayTitle := .Title }}
+  {{ with .Data.Term }}
+    {{ $termKey = . }}
+    {{ with index $categoryTitles . }}
+      {{ $displayTitle = . }}
+    {{ end }}
+  {{ end }}
+  {{ with index $pages 0 }}
+    {{ with .File }}
+      {{ $base := .ContentBaseName }}
+      {{ $themeKey = index (split $base "-") 0 }}
+      {{ if and (eq $themeKey "health") (hasPrefix $base "health-well-being-") }}
+        {{ $themeKey = "health-well-being" }}
+      {{ end }}
+    {{ end }}
+  {{ end }}
+
+  <div class="questions-shell">
+    <div class="questions-layout">
+      {{ partial "questions_sidebar.html" . }}
+
+      <div class="questions-content">
+        <header class="page-header questions-header">
+          {{ partial "breadcrumbs.html" . }}
+          <p class="questions-parent-theme">{{ index $themeLabels $themeKey | default "Questions" }}</p>
+          <h1>{{ $displayTitle }}</h1>
+          <p class="taxonomy-summary">{{ len $pages }} {{ cond $isFrench "entrée" "entry" }}{{ if ne (len $pages) 1 }}{{ cond $isFrench "s" "ies" }}{{ end }}</p>
+        </header>
+
+        {{ if $themeKey }}
+          {{ $siblingCategories := slice }}
+          {{ range $name, $taxonomy := site.Taxonomies.categories }}
+            {{ $matchesTheme := false }}
+            {{ range $taxonomy.Pages }}
+              {{ with .File }}
+                {{ $base := .ContentBaseName }}
+                {{ if or (hasPrefix $base (printf "%s-" $themeKey)) (and (eq $themeKey "health-well-being") (hasPrefix $base "health-well-being-")) }}
+                  {{ $matchesTheme = true }}
+                {{ end }}
+              {{ end }}
+            {{ end }}
+            {{ if $matchesTheme }}
+              {{ with site.GetPage (printf "/categories/%s" $name) }}
+                {{ $siblingCategories = $siblingCategories | append . }}
+              {{ end }}
+            {{ end }}
+          {{ end }}
+
+          {{ if gt (len $siblingCategories) 0 }}
+            <section class="questions-library">
+              <div class="section-heading">
+                <h2>{{ index $themeLabels $themeKey | default "Theme" }}</h2>
+                <span class="taxonomy-summary">{{ len $siblingCategories }} {{ cond $isFrench "catégories" "categories" }}</span>
+              </div>
+              <div class="questions-tag-list">
+                {{ range sort $siblingCategories "Title" }}
+                  {{ $siblingTitle := .Title }}
+                  {{ with .Data.Term }}
+                    {{ with index $categoryTitles . }}
+                      {{ $siblingTitle = . }}
+                    {{ end }}
+                  {{ end }}
+                  <a class="questions-tag-pill{{ if eq $.RelPermalink .RelPermalink }} is-active{{ end }}" href="{{ .RelPermalink }}">{{ $siblingTitle }}</a>
+                {{ end }}
+              </div>
+            </section>
+          {{ end }}
+        {{ end }}
+
+        <div class="questions-entry-list">
+          {{ range $pages }}
+            <article class="post-entry questions-entry">
+              <header class="entry-header">
+                <h2 class="entry-hint-parent">{{ .Title }}</h2>
+              </header>
+              <div class="entry-content">
+                <p>{{ .Summary | plainify | htmlUnescape }}</p>
+              </div>
+              <footer class="entry-footer">
+                {{- partial "questions_post_meta.html" . -}}
+              </footer>
+              <a class="entry-link" aria-label="entry link to {{ .Title | plainify }}" href="{{ .RelPermalink }}"></a>
+            </article>
+          {{ end }}
+        </div>
+      </div>
+    </div>
+  </div>
+{{ end }}

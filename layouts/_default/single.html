@@ -1,0 +1,187 @@
+{{- define "main" }}
+{{ $isQuestionsPage := eq .Section "questions" }}
+{{ $isProjectsPage := eq .Section "projects" }}
+{{ $isFailureEntry := in .Permalink "/projects/failures/" }}
+{{ $isFrench := eq .Lang "fr" }}
+{{ $categoryTitles := site.Data.questions.category_titles }}
+{{ $tagTitles := site.Data.questions.tag_titles }}
+{{ $coverParams := .Params.cover }}
+
+{{ if $isQuestionsPage }}
+<div class="questions-shell">
+  <div class="questions-layout questions-layout-single">
+    {{ partial "questions_sidebar.html" . }}
+
+    <article class="post-single questions-single questions-content">
+      <header class="post-header">
+        {{ partial "breadcrumbs.html" . }}
+        <h1 class="post-title entry-hint-parent">
+          {{ .Title }}
+          {{- if .Draft }}
+          <span class="entry-hint" title="Draft">
+            <svg xmlns="http://www.w3.org/2000/svg" height="42" viewBox="0 -960 960 960" fill="currentColor">
+              <path
+                d="M160-410v-60h300v60H160Zm0-165v-60h470v60H160Zm0-165v-60h470v60H160Zm360 580v-123l221-220q9-9 20-13t22-4q12 0 23 4.5t20 13.5l37 37q9 9 13 20t4 22q0 11-4.5 22.5T862.09-380L643-160H520Zm300-263-37-37 37 37ZM580-220h38l121-122-18-19-19-18-122 121v38Zm141-141-19-18 37 37-18-19Z" />
+            </svg>
+          </span>
+          {{- end }}
+        </h1>
+        {{- if not (.Param "hideMeta") }}
+        <div class="post-meta">
+          {{- partial "questions_post_meta.html" . -}}
+          {{- partial "translation_list.html" . -}}
+          {{- partial "edit_post.html" . -}}
+          {{- partial "post_canonical.html" . -}}
+        </div>
+        {{- end }}
+        {{ with .Params.categories }}
+          <ul class="questions-meta-list">
+            {{ range . }}
+              {{ with site.GetPage (printf "/categories/%s" .) }}
+                <li><a href="{{ .RelPermalink }}">{{ index $categoryTitles .Data.Term | default .Title }}</a></li>
+              {{ end }}
+            {{ end }}
+          </ul>
+        {{ end }}
+      </header>
+
+      {{- $isHidden := false }}
+      {{- if and $coverParams (isset $coverParams "hiddeninsingle") }}
+      {{- $isHidden = index $coverParams "hiddeninsingle" }}
+      {{- else if and $coverParams (isset $coverParams "hidden") }}
+      {{- $isHidden = index $coverParams "hidden" }}
+      {{- else if isset site.Params.cover "hiddeninsingle" }}
+      {{- $isHidden = site.Params.cover.hiddenInSingle }}
+      {{- else if isset site.Params.cover "hidden" }}
+      {{- $isHidden = site.Params.cover.hidden }}
+      {{- end }}
+      {{- partial "cover.html" (dict "cxt" . "IsSingle" true "isHidden" $isHidden) }}
+
+      {{- if .Content }}
+      <div class="post-content">
+        {{- if not (.Param "disableAnchoredHeadings") }}
+        {{- partial "anchored_headings.html" .Content -}}
+        {{- else }}{{ .Content }}{{ end }}
+      </div>
+      {{- end }}
+
+      <footer class="post-footer">
+        {{- $tags := .Language.Params.Taxonomies.tag | default "tags" }}
+        <ul class="post-tags">
+          {{- range ($.GetTerms $tags) }}
+          <li><a href="{{ .Permalink }}">{{ index $tagTitles .Data.Term | default .LinkTitle }}</a></li>
+          {{- end }}
+        </ul>
+      </footer>
+    </article>
+  </div>
+</div>
+{{ else if $isFailureEntry }}
+<article class="post-single failure-single">
+  <header class="post-header">
+    {{ partial "breadcrumbs.html" . }}
+    <h1 class="post-title">{{ .Title }}</h1>
+    <div class="failure-single-meta">
+      <span class="failure-chip failure-type">{{ .Params.type }}</span>
+      <span class="failure-chip failure-status">{{ .Params.status }}</span>
+      <span class="failure-single-venue">{{ .Params.venue }}</span>
+      <span class="failure-single-date">{{ .Params.displayDate | default (.Date.Format "Jan 2, 2006") }}</span>
+    </div>
+  </header>
+
+  <div class="post-content">
+    {{ .Content }}
+    {{- if or .Params.note .Params.outcome }}
+    <details class="failure-note-panel" open>
+      <summary>{{ cond $isFrench "Détails" "Details" }}</summary>
+      {{- with .Params.note }}
+      <p>{{ . }}</p>
+      {{- end }}
+      {{- with .Params.outcome }}
+      <p><strong>{{ cond $isFrench "Suite donnee :" "What happened next:" }}</strong> {{ . }}</p>
+      {{- end }}
+    </details>
+    {{- end }}
+  </div>
+
+  {{- partial "comments.html" . }}
+</article>
+{{ else }}
+<article class="post-single">
+  <header class="post-header">
+    {{ partial "breadcrumbs.html" . }}
+    <h1 class="post-title entry-hint-parent">
+      {{ .Title }}
+      {{- if .Draft }}
+      <span class="entry-hint" title="Draft">
+        <svg xmlns="http://www.w3.org/2000/svg" height="42" viewBox="0 -960 960 960" fill="currentColor">
+          <path
+            d="M160-410v-60h300v60H160Zm0-165v-60h470v60H160Zm0-165v-60h470v60H160Zm360 580v-123l221-220q9-9 20-13t22-4q12 0 23 4.5t20 13.5l37 37q9 9 13 20t4 22q0 11-4.5 22.5T862.09-380L643-160H520Zm300-263-37-37 37 37ZM580-220h38l121-122-18-19-19-18-122 121v38Zm141-141-19-18 37 37-18-19Z" />
+        </svg>
+      </span>
+      {{- end }}
+    </h1>
+    {{- if not (.Param "hideMeta") }}
+    <div class="post-meta">
+      {{- if $isProjectsPage -}}
+      {{- partial "projects_post_meta.html" . -}}
+      {{- else -}}
+      {{- partial "post_meta.html" . -}}
+      {{- end -}}
+      {{- partial "translation_list.html" . -}}
+      {{- partial "edit_post.html" . -}}
+      {{- partial "post_canonical.html" . -}}
+    </div>
+    {{- end }}
+    {{- if and $isProjectsPage (or .Params.project_type .Params.project_status) }}
+    <div class="project-single-meta">
+      {{ with .Params.project_type }}<span class="project-chip">{{ . }}</span>{{ end }}
+      {{ with .Params.project_status }}<span class="project-chip project-chip-status">{{ . }}</span>{{ end }}
+    </div>
+    {{- end }}
+  </header>
+  {{- $isHidden := false }}
+  {{- if and $coverParams (isset $coverParams "hiddeninsingle") }}
+  {{- $isHidden = index $coverParams "hiddeninsingle" }}
+  {{- else if and $coverParams (isset $coverParams "hidden") }}
+  {{- $isHidden = index $coverParams "hidden" }}
+  {{- else if isset site.Params.cover "hiddeninsingle" }}
+  {{- $isHidden = site.Params.cover.hiddenInSingle }}
+  {{- else if isset site.Params.cover "hidden" }}
+  {{- $isHidden = site.Params.cover.hidden }}
+  {{- end }}
+  {{- partial "cover.html" (dict "cxt" . "IsSingle" true "isHidden" $isHidden) }}
+  {{- if (.Param "ShowToc") }}
+  {{- partial "toc.html" . }}
+  {{- end }}
+
+  {{- if .Content }}
+  <div class="post-content">
+    {{- if not (.Param "disableAnchoredHeadings") }}
+    {{- partial "anchored_headings.html" .Content -}}
+    {{- else }}{{ .Content }}{{ end }}
+  </div>
+  {{- end }}
+
+  <footer class="post-footer">
+    {{- $tags := .Language.Params.Taxonomies.tag | default "tags" }}
+    <ul class="post-tags">
+      {{- range ($.GetTerms $tags) }}
+      <li><a href="{{ .Permalink }}">{{ .LinkTitle }}</a></li>
+      {{- end }}
+    </ul>
+    {{- if (.Param "ShowPostNavLinks") }}
+    {{- partial "post_nav_links.html" . }}
+    {{- end }}
+    {{- if (and site.Params.ShowShareButtons (ne .Params.disableShare true)) }}
+    {{- partial "share_icons.html" . -}}
+    {{- end }}
+  </footer>
+
+  {{- if (.Param "comments") }}
+  {{- partial "comments.html" . }}
+  {{- end }}
+</article>
+{{ end }}
+
+{{- end }}{{/* end main */}}

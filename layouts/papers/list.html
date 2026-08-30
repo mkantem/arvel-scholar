@@ -1,0 +1,61 @@
+{{ define "main" }}
+  {{ $isFrench := eq .Site.Language.Lang "fr" }}
+  {{ $groups := .RegularPages.GroupByDate "2006" }}
+  <header class="page-header papers-header">
+    {{ partial "breadcrumbs.html" . }}
+    <h1>{{ .Title }}</h1>
+    {{ with .Content }}
+      <div class="post-content">{{ . }}</div>
+    {{ end }}
+  </header>
+
+  {{ if $groups }}
+    <div class="papers-list">
+      {{ range $groups }}
+        <section class="papers-year-group">
+          <div class="section-heading">
+            <h2>{{ .Key }}</h2>
+            <span class="taxonomy-summary">{{ len .Pages }} {{ if $isFrench }}publication{{ if ne (len .Pages) 1 }}s{{ end }}{{ else }}publication{{ if ne (len .Pages) 1 }}s{{ end }}{{ end }}</span>
+          </div>
+          {{ range .Pages.ByDate.Reverse }}
+            <article class="paper-card">
+              <header class="paper-card-header">
+                <div class="paper-card-meta">
+                  {{ with .Params.status }}
+                    {{ $statusLabel := . }}
+                    {{ $statusClass := "" }}
+                    {{ $statusKey := lower (plainify $statusLabel) }}
+                    {{ if or (eq $statusKey "published") (eq $statusKey "publié") (eq $statusKey "publie") }}
+                      {{ $statusClass = "published" }}
+                    {{ else if or (eq $statusKey "preprint") (eq $statusKey "prépublication") (eq $statusKey "prepublication") }}
+                      {{ $statusClass = "preprint" }}
+                    {{ else if or (eq $statusKey "working paper") (eq $statusKey "document de travail") }}
+                      {{ $statusClass = "working-paper" }}
+                    {{ else }}
+                      {{ $statusClass = anchorize $statusLabel }}
+                    {{ end }}
+                    <span class="paper-status paper-status-{{ $statusClass }}">{{ $statusLabel }}</span>
+                  {{ end }}
+                  {{ with .Params.publication_type }}
+                    <span class="paper-type">{{ . }}</span>
+                  {{ end }}
+                </div>
+                <h3><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
+                {{ with .Params.publication }}
+                  <p class="paper-venue">{{ . }}</p>
+                {{ end }}
+                {{ with .Params.authors }}
+                  <p class="paper-authors">{{ delimit . ", " }}</p>
+                {{ end }}
+              </header>
+              {{ with .Summary }}
+                <p class="paper-summary">{{ . | plainify | htmlUnescape }}</p>
+              {{ end }}
+              {{ partial "paper_actions.html" . }}
+            </article>
+          {{ end }}
+        </section>
+      {{ end }}
+    </div>
+  {{ end }}
+{{ end }}

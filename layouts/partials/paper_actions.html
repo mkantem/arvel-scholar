@@ -1,0 +1,15 @@
+{{ $paper := . }}
+{{ $isFrench := eq $paper.Site.Language.Lang "fr" }}
+{{ $abstractHref := printf "%s#abstract" $paper.RelPermalink }}
+<div class="paper-actions">
+  <a class="paper-action" href="{{ $abstractHref }}">{{ cond $isFrench "Résumé" "Abstract" }}</a>
+  {{ with $paper.Params.pdf }}
+    <a class="paper-action" href="{{ . }}" target="_blank" rel="noopener noreferrer">PDF</a>
+  {{ end }}
+  {{ with $paper.Params.doi }}
+    <a class="paper-action" href="{{ . }}" target="_blank" rel="noopener noreferrer">DOI</a>
+  {{ end }}
+  {{ if or $paper.Params.citation $paper.Params.bibtex }}
+    <a class="paper-action" href="{{ printf "%s#citation" $paper.RelPermalink }}">{{ cond $isFrench "Citation" "Citation" }}</a>
+  {{ end }}
+</div>

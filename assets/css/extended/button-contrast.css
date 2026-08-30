@@ -1,0 +1,9 @@
+body.dark .button:hover,
+body.dark .button:focus-visible {
+    background: var(--primary);
+}
+
+body.dark .button:hover .button-inner,
+body.dark .button:focus-visible .button-inner {
+    color: var(--theme);
+}

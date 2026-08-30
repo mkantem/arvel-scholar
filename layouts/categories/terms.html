@@ -1,0 +1,54 @@
+{{ define "main" }}
+  {{ $themeLabels := site.Data.questions.themes }}
+  {{ $themeOrder := site.Data.questions.theme_order }}
+  {{ $categoryTitles := site.Data.questions.category_titles }}
+  {{ $isFrench := eq .Site.Language.Lang "fr" }}
+
+  <div class="questions-shell">
+    <div class="questions-layout">
+      {{ partial "questions_sidebar.html" . }}
+
+      <div class="questions-content">
+        <header class="page-header questions-header">
+          {{ partial "breadcrumbs.html" . }}
+          <h1>{{ .Title }}</h1>
+          <p class="taxonomy-summary">{{ len .Data.Terms }} {{ cond $isFrench "terme" "term" }}{{ if ne (len .Data.Terms) 1 }}{{ cond $isFrench "s" "s" }}{{ end }}</p>
+        </header>
+
+        {{ range $themeOrder }}
+          {{ $theme := . }}
+          {{ $themeTerms := slice }}
+          {{ range $name, $taxonomy := site.Taxonomies.categories }}
+            {{ $matchesTheme := false }}
+            {{ range $taxonomy.Pages }}
+              {{ with .File }}
+                {{ $base := .ContentBaseName }}
+                {{ if or (hasPrefix $base (printf "%s-" $theme)) (and (eq $theme "health-well-being") (hasPrefix $base "health-well-being-")) }}
+                  {{ $matchesTheme = true }}
+                {{ end }}
+              {{ end }}
+            {{ end }}
+            {{ if $matchesTheme }}
+              {{ with site.GetPage (printf "/categories/%s" $name) }}
+                {{ $themeTerms = $themeTerms | append . }}
+              {{ end }}
+            {{ end }}
+          {{ end }}
+
+          {{ if gt (len $themeTerms) 0 }}
+            <section class="questions-library">
+              <div class="section-heading">
+                <h2>{{ index $themeLabels $theme | default ($theme | title) }}</h2>
+              </div>
+              <div class="questions-tag-list questions-terms-grid">
+                {{ range sort $themeTerms "Title" }}
+                    <a class="questions-tag-pill" href="{{ .RelPermalink }}">{{ index $categoryTitles .Data.Term | default .Title }} <span>{{ len .Pages }}</span></a>
+                {{ end }}
+              </div>
+            </section>
+          {{ end }}
+        {{ end }}
+      </div>
+    </div>
+  </div>
+{{ end }}

@@ -1,0 +1,106 @@
+{{ define "main" }}
+  {{ $questions := .RegularPages.ByTitle }}
+  {{ $categoryTaxonomy := site.Taxonomies.categories }}
+  {{ $tagTaxonomy := site.Taxonomies.tags }}
+  {{ $themeLabels := site.Data.questions.themes }}
+  {{ $themeOrder := site.Data.questions.theme_order }}
+  {{ $categoryTitles := site.Data.questions.category_titles }}
+  {{ $tagTitles := site.Data.questions.tag_titles }}
+  {{ $isFrench := eq .Site.Language.Lang "fr" }}
+
+  <div class="questions-shell">
+    <div class="questions-layout">
+      {{ partial "questions_sidebar.html" . }}
+
+      <div class="questions-content">
+        <header class="page-header questions-header">
+          {{ partial "breadcrumbs.html" . }}
+          <h1>{{ .Title }}</h1>
+          {{ with .Content }}
+            <div class="post-content">{{ . }}</div>
+          {{ end }}
+        </header>
+
+        <section class="questions-overview">
+          <article class="questions-stat">
+            <span class="questions-stat-label">{{ cond $isFrench "Questions" "Questions" }}</span>
+            <strong>{{ len $questions }}</strong>
+          </article>
+          <article class="questions-stat">
+            <span class="questions-stat-label">{{ cond $isFrench "Catégories" "Categories" }}</span>
+            <strong>{{ len $categoryTaxonomy }}</strong>
+          </article>
+          <article class="questions-stat">
+            <span class="questions-stat-label">{{ cond $isFrench "Étiquettes" "Tags" }}</span>
+            <strong>{{ len $tagTaxonomy }}</strong>
+          </article>
+        </section>
+
+        {{ if $categoryTaxonomy }}
+          <section class="questions-library">
+            <div class="section-heading">
+              <h2>{{ cond $isFrench "Parcourir par catégorie" "Browse by category" }}</h2>
+              <a href="{{ "/categories/" | relURL }}">{{ cond $isFrench "Toutes les catégories" "All categories" }}</a>
+            </div>
+            {{ range $themeOrder }}
+              {{ $theme := . }}
+              {{ $themeCategories := slice }}
+              {{ range $name, $taxonomy := $categoryTaxonomy }}
+                {{ $matchesTheme := false }}
+                {{ range $taxonomy.Pages }}
+                  {{ with .File }}
+                    {{ $base := .ContentBaseName }}
+                    {{ if or (hasPrefix $base (printf "%s-" $theme)) (and (eq $theme "health-well-being") (hasPrefix $base "health-well-being-")) }}
+                      {{ $matchesTheme = true }}
+                    {{ end }}
+                  {{ end }}
+                {{ end }}
+                {{ if $matchesTheme }}
+                  {{ with site.GetPage (printf "/categories/%s" $name) }}
+                    {{ $themeCategories = $themeCategories | append (dict "page" . "count" (len $taxonomy.Pages) "name" $name "pages" $taxonomy.Pages) }}
+                  {{ end }}
+                {{ end }}
+              {{ end }}
+              {{ if gt (len $themeCategories) 0 }}
+                <section class="questions-theme-group">
+                  <div class="section-heading">
+                    <h3>{{ index $themeLabels $theme | default ($theme | title) }}</h3>
+                  </div>
+                  <div class="questions-category-grid">
+                    {{ range sort $themeCategories "page.Title" }}
+                      <article class="questions-category-card">
+                        <h3><a href="{{ .page.RelPermalink }}">{{ index $categoryTitles .name | default .page.Title }}</a></h3>
+                        <p>{{ .count }} {{ cond $isFrench "question" "question" }}{{ if ne .count 1 }}{{ cond $isFrench "s" "s" }}{{ end }}</p>
+                        <ul>
+                          {{ range first 3 (.pages.ByTitle) }}
+                            <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
+                          {{ end }}
+                        </ul>
+                      </article>
+                    {{ end }}
+                  </div>
+                </section>
+              {{ end }}
+            {{ end }}
+          </section>
+        {{ end }}
+
+        {{ if $tagTaxonomy }}
+          <section class="questions-library">
+            <div class="section-heading">
+              <h2>{{ cond $isFrench "Parcourir par étiquette" "Browse by tag" }}</h2>
+              <a href="{{ "/tags/" | relURL }}">{{ cond $isFrench "Toutes les étiquettes" "All tags" }}</a>
+            </div>
+            <div class="questions-tag-list">
+              {{ range $name, $taxonomy := $tagTaxonomy }}
+                {{ with site.GetPage (printf "/tags/%s" $name) }}
+                  <a class="questions-tag-pill" href="{{ .RelPermalink }}">{{ index $tagTitles $name | default .Title }} <span>{{ len $taxonomy.Pages }}</span></a>
+                {{ end }}
+              {{ end }}
+            </div>
+          </section>
+        {{ end }}
+      </div>
+    </div>
+  </div>
+{{ end }}

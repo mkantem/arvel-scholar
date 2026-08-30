@@ -1,0 +1,12 @@
+{
+  "name": "arvel-scholar",
+  "private": true,
+  "scripts": {
+    "serve": "hugo serve",
+    "build": "hugo",
+    "deploy:dry-run": "npm run build && wrangler deploy --dry-run",
+    "deploy": "npm run build && wrangler deploy"
+  },
+  "devDependencies": { "wrangler": "^4.0.0" }
+}
+

@@ -1,0 +1,36 @@
+{{ define "main" }}
+  <div class="resources-shell">
+    <div class="resources-layout resources-layout-single">
+      {{ partial "resources_sidebar.html" . }}
+
+      <article class="post-single resources-single resources-content">
+        <header class="post-header resources-header">
+          {{ partial "breadcrumbs.html" . }}
+          <h1 class="post-title">{{ .Title }}</h1>
+          {{ if .Params.parent }}
+            <p class="resources-parent">{{ .Params.parent }}</p>
+          {{ end }}
+        </header>
+
+        {{ if .TableOfContents }}
+          <div class="questions-local-toc">
+            <div class="toc">
+              <details open>
+                <summary>{{ cond (eq .Lang "fr") "Table des matières" "Table of contents" }}</summary>
+                <div class="details">
+                  {{ .TableOfContents }}
+                </div>
+              </details>
+            </div>
+          </div>
+        {{ end }}
+
+        <div class="post-content">
+          {{ .Content }}
+        </div>
+
+        {{- partial "comments.html" . }}
+      </article>
+    </div>
+  </div>
+{{ end }}

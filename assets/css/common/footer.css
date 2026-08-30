@@ -1,0 +1,197 @@
+.newsletter-signup {
+    margin-top: 3rem;
+    padding: 0 var(--gap);
+}
+
+.newsletter-signup__inner {
+    margin: 0 auto;
+    max-width: 720px;
+    padding: 28px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    background: linear-gradient(135deg, var(--entry) 0%, var(--code-bg) 100%);
+    text-align: left;
+}
+
+.newsletter-signup__eyebrow {
+    margin: 0 0 8px;
+    color: var(--secondary);
+    font-size: 0.82rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.newsletter-signup__title {
+    margin: 0;
+    font-size: 1.8rem;
+    line-height: 1.2;
+}
+
+.newsletter-signup__copy,
+.newsletter-signup__note,
+.newsletter-signup__status {
+    margin: 12px 0 0;
+    color: var(--secondary);
+}
+
+.newsletter-signup__form {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 12px;
+    margin-top: 18px;
+    align-items: end;
+}
+
+.newsletter-signup__field {
+    display: block;
+}
+
+.newsletter-signup__robot {
+    grid-column: 1 / -1;
+    min-height: 65px;
+    width: 100%;
+}
+
+.newsletter-signup__label {
+    display: inline-block;
+    margin-bottom: 8px;
+    font-size: 0.95rem;
+    color: var(--primary);
+}
+
+.newsletter-signup__input {
+    width: 100%;
+    min-height: 48px;
+    padding: 0 14px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--theme);
+    color: var(--primary);
+}
+
+.newsletter-signup__input::placeholder {
+    color: var(--secondary);
+}
+
+.dark .newsletter-signup__input {
+    color: #fff;
+    -webkit-text-fill-color: #fff;
+}
+
+.dark .newsletter-signup__input::placeholder {
+    color: rgba(255, 255, 255, 0.68);
+}
+
+.newsletter-signup__input:focus {
+    outline: 2px solid var(--secondary);
+    outline-offset: 2px;
+}
+
+.newsletter-signup__button {
+    min-height: 48px;
+    padding: 0 18px;
+    border: 0;
+    border-radius: 12px;
+    background: var(--primary);
+    color: var(--theme);
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.newsletter-signup__button:hover:not(:disabled) {
+    opacity: 0.92;
+    transform: translateY(-1px);
+}
+
+.newsletter-signup__button:disabled {
+    opacity: 0.65;
+    cursor: wait;
+}
+
+.newsletter-signup__status[data-state="success"] {
+    color: #2f9e44;
+}
+
+.newsletter-signup__status[data-state="error"] {
+    color: #d94841;
+}
+
+.newsletter-signup__honeypot {
+    position: absolute;
+    left: -9999px;
+}
+
+@media (max-width: 640px) {
+    .newsletter-signup__inner {
+        padding: 22px 18px;
+    }
+
+    .newsletter-signup__form {
+        grid-template-columns: 1fr;
+    }
+
+    .newsletter-signup__button {
+        width: 100%;
+    }
+}
+
+.footer,
+.top-link {
+    font-size: var(--footersize);
+    color: var(--secondary);
+}
+
+.footer {
+    margin: auto;
+    padding: calc((var(--footer-height) - var(--gap)) / 2) var(--gap);
+    text-align: center;
+    line-height: 20px;
+    background: var(--code-bg);
+}
+
+.footer span {
+    margin-inline-start: 1px;
+    margin-inline-end: 1px;
+}
+
+.footer span:last-child {
+    white-space: nowrap;
+}
+
+.footer a {
+    color: var(--secondary);
+}
+
+.footer a:hover {
+    border-bottom: 2px solid var(--darkcolor);
+}
+
+.top-link {
+    visibility: hidden;
+    position: fixed;
+    bottom: 60px;
+    right: 30px;
+    z-index: 99;
+    background: var(--tertiary);
+    width: 42px;
+    height: 42px;
+    padding: 12px;
+    border-radius: 64px;
+    transition: visibility 0.5s, opacity 0.8s linear;
+}
+
+.top-link,
+.top-link svg {
+    filter: drop-shadow(0px 0px 0px var(--theme));
+}
+
+.footer a:hover,
+.top-link:hover {
+    color: var(--secondary);
+}
+
+.top-link:focus,
+#theme-toggle:focus {
+    outline: 0;
+}

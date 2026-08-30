@@ -1,0 +1,101 @@
+{{ define "main" }}
+  {{ $resourcesHome := site.GetPage "/resources" }}
+  {{ $groupOrder := site.Data.resources.group_order }}
+  {{ $groupTitles := site.Data.resources.group_titles }}
+  {{ $groupDescriptions := site.Data.resources.group_descriptions }}
+  {{ $pages := where site.Pages "Section" "resources" }}
+  {{ $pages = where $pages "Kind" "in" (slice "page" "section") }}
+  {{ $isResourcesHome := and $resourcesHome (eq .RelPermalink $resourcesHome.RelPermalink) }}
+  {{ $isFrench := eq .Lang "fr" }}
+
+  <div class="resources-shell">
+    <div class="resources-layout">
+      {{ partial "resources_sidebar.html" . }}
+
+      <div class="resources-content">
+        <header class="page-header resources-header">
+          {{ partial "breadcrumbs.html" . }}
+          <h1>{{ .Title }}</h1>
+          {{ with .Content }}
+            <div class="post-content">{{ . }}</div>
+          {{ end }}
+        </header>
+
+        {{ if $isResourcesHome }}
+          <section class="resources-overview">
+            <article class="resources-stat">
+              <span class="resources-stat-label">{{ cond $isFrench "Guides" "Guides" }}</span>
+              <strong>{{ len (where site.RegularPages "Section" "resources") }}</strong>
+            </article>
+            <article class="resources-stat">
+              <span class="resources-stat-label">{{ cond $isFrench "Images" "Images" }}</span>
+              <strong>98</strong>
+            </article>
+            <article class="resources-stat">
+              <span class="resources-stat-label">{{ cond $isFrench "Langue" "Language" }}</span>
+              <strong>{{ cond $isFrench "Français" "English" }}</strong>
+            </article>
+          </section>
+
+          <section class="resources-library">
+            <div class="section-heading">
+              <h2>{{ cond $isFrench "Parcourir les ressources" "Browse resources" }}</h2>
+            </div>
+            <div class="resources-group-grid">
+              {{ range $groupOrder }}
+                {{ $group := . }}
+                {{ $groupPages := where $pages "RelPermalink" "like" (printf "/resources/%s/*" $group) }}
+                {{ if gt (len $groupPages) 0 }}
+                  {{ $rootPages := where $groupPages "Params.parent" nil }}
+                  <article class="resources-group-card">
+                    {{ $groupTitle := index $groupTitles $group | default ($group | title) }}
+                    {{ $groupDescription := index $groupDescriptions $group }}
+                    {{ if not $isFrench }}
+                      {{ if eq $group "bibliographie" }}
+                        {{ $groupTitle = "Bibliography Management Tools" }}
+                        {{ $groupDescription = "Guides and tutorials for reference managers, citation workflows, and research indicators." }}
+                      {{ else if eq $group "programming" }}
+                        {{ $groupTitle = "Learning to Program" }}
+                        {{ $groupDescription = "Teaching resources for getting started with programming, exploring languages, and finding useful tools." }}
+                      {{ else if eq $group "workshop" }}
+                        {{ $groupTitle = "Language Processing and Social Media" }}
+                        {{ $groupDescription = "Workshop modules on scraping, text analysis, social networks, AI, and ethics." }}
+                      {{ end }}
+                    {{ end }}
+                    <h3>{{ $groupTitle }}</h3>
+                    <p>{{ $groupDescription }}</p>
+                    <ul>
+                      {{ range first 5 (sort $rootPages "Params.nav_order" "asc") }}
+                        <li><a href="{{ .RelPermalink }}">{{ .Title }}</a></li>
+                      {{ end }}
+                    </ul>
+                  </article>
+                {{ end }}
+              {{ end }}
+            </div>
+          </section>
+        {{ else }}
+          {{ $children := .Pages }}
+          {{ if gt (len $children) 0 }}
+            <section class="resources-library">
+              <div class="section-heading">
+                <h2>{{ cond $isFrench "Contenu de cette section" "Contents of this section" }}</h2>
+                <span class="taxonomy-summary">{{ len $children }} {{ cond $isFrench "page" "page" }}{{ if ne (len $children) 1 }}s{{ end }}</span>
+              </div>
+              <div class="resources-group-grid">
+                {{ range $children.ByTitle }}
+                  <article class="resources-group-card">
+                    <h3><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
+                    {{ with .Summary }}
+                      <p>{{ . | plainify | htmlUnescape }}</p>
+                    {{ end }}
+                  </article>
+                {{ end }}
+              </div>
+            </section>
+          {{ end }}
+        {{ end }}
+      </div>
+    </div>
+  </div>
+{{ end }}

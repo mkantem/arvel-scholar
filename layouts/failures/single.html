@@ -1,0 +1,30 @@
+{{- define "main" }}
+{{- $isFrench := eq .Lang "fr" -}}
+{{- $entryType := .Params.entry_type | default .Params.type -}}
+<article class="post-single failure-single">
+  <header class="post-header">
+    {{- partial "breadcrumbs.html" . }}
+    <h1 class="post-title">{{ .Title }}</h1>
+    <div class="failure-single-meta">
+      <span class="failure-chip failure-type">{{ $entryType }}</span>
+      <span class="failure-chip failure-status">{{ .Params.status }}</span>
+      <span class="failure-single-venue">{{ .Params.venue }}</span>
+      <span class="failure-single-date">{{ .Params.displayDate | default (.Date.Format "Jan 2, 2006") }}</span>
+    </div>
+  </header>
+
+  <div class="post-content">
+    {{ .Content }}
+    {{- with .Params.note }}
+    <h2>{{ cond $isFrench "Note" "Note" }}</h2>
+    <p>{{ . }}</p>
+    {{- end }}
+    {{- with .Params.outcome }}
+    <h2>{{ cond $isFrench "Suite donnée" "What Happened Next" }}</h2>
+    <p>{{ . }}</p>
+    {{- end }}
+  </div>
+
+  {{- partial "comments.html" . }}
+</article>
+{{- end }}

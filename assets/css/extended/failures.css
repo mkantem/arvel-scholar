@@ -1,0 +1,182 @@
+.section-failures .main {
+  max-width: 1100px;
+}
+
+.failures-intro {
+  max-width: 760px;
+  margin-bottom: 2rem;
+}
+
+.failures-ledger {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.failures-year-group {
+  display: grid;
+  grid-template-columns: 110px minmax(0, 1fr);
+  gap: 1.5rem;
+  align-items: start;
+  padding-top: 0.25rem;
+  border-top: 1px solid var(--border);
+}
+
+.failures-year {
+  position: sticky;
+  top: 92px;
+  font-size: 1.85rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--primary);
+}
+
+.failures-entries {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.failure-entry {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr) auto;
+  gap: 1.15rem;
+  padding: 1rem 1.35rem;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: linear-gradient(180deg, var(--entry) 0%, var(--theme) 100%);
+}
+
+.failure-date {
+  font-size: 0.95rem;
+  color: var(--secondary);
+  white-space: normal;
+  line-height: 1.25;
+  padding-top: 0.15rem;
+}
+
+.failure-title {
+  margin: 0 0 0.2rem;
+  font-size: 1.05rem;
+}
+
+.failure-title a {
+  color: var(--primary);
+}
+
+.failure-title-icon {
+  display: inline-flex;
+  margin-right: 0.45rem;
+  color: var(--secondary);
+}
+
+.failure-venue,
+.failure-note,
+.failure-outcome {
+  margin: 0.25rem 0 0;
+}
+
+.failure-venue {
+  color: var(--secondary);
+  font-size: 0.95rem;
+  line-height: 1.35;
+}
+
+.failure-note {
+  font-size: 0.95rem;
+  color: var(--primary);
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.failure-outcome {
+  font-size: 0.92rem;
+  color: var(--secondary);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.failure-meta,
+.failure-single-meta {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  gap: 0.45rem;
+  align-items: flex-end;
+  justify-content: flex-start;
+  justify-self: end;
+}
+
+.failure-details,
+.failure-note-panel {
+  margin-top: 0.65rem;
+  border-top: 1px solid var(--border);
+  padding-top: 0.6rem;
+}
+
+.failure-details summary,
+.failure-note-panel summary {
+  cursor: pointer;
+  color: var(--secondary);
+  font-size: 0.9rem;
+}
+
+.failure-details p,
+.failure-note-panel p {
+  margin: 0.65rem 0 0;
+}
+
+.failure-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.32rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  border: 1px solid var(--border);
+}
+
+.failure-type {
+  background: color-mix(in srgb, var(--theme) 78%, var(--primary) 22%);
+}
+
+.failure-status {
+  background: color-mix(in srgb, var(--theme) 84%, #b64a4a 16%);
+}
+
+.failure-single-meta {
+  justify-content: flex-start;
+  margin-top: 1rem;
+}
+
+.failure-single-venue,
+.failure-single-date {
+  color: var(--secondary);
+  font-size: 0.92rem;
+}
+
+@media (max-width: 820px) {
+  .failures-year-group {
+    grid-template-columns: 1fr;
+  }
+
+  .failures-year {
+    position: static;
+  }
+
+  .failure-entry {
+    grid-template-columns: 1fr;
+  }
+
+  .failure-meta {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: flex-start;
+  }
+}

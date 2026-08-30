@@ -1,0 +1,27 @@
+{{ define "main" }}
+  {{ $isFrench := eq .Site.Language.Lang "fr" }}
+  <div class="questions-shell">
+    <div class="questions-layout">
+      {{ partial "questions_sidebar.html" . }}
+
+      <div class="questions-content">
+        <header class="page-header questions-header">
+          {{ partial "breadcrumbs.html" . }}
+          <h1>{{ .Title }}</h1>
+          <p class="taxonomy-summary">{{ len .Data.Terms }} {{ cond $isFrench "terme" "term" }}{{ if ne (len .Data.Terms) 1 }}s{{ end }}</p>
+        </header>
+
+        <div class="questions-tag-list questions-terms-grid">
+          {{ $type := .Type }}
+          {{ range $key, $value := .Data.Terms.Alphabetical }}
+            {{ $name := .Name }}
+            {{ $count := .Count }}
+            {{ with site.GetPage (printf "/%s/%s" $type $name) }}
+              <a class="questions-tag-pill" href="{{ .RelPermalink }}">{{ .Title }} <span>{{ $count }}</span></a>
+            {{ end }}
+          {{ end }}
+        </div>
+      </div>
+    </div>
+  </div>
+{{ end }}

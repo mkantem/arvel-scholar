@@ -1,0 +1,48 @@
+.profile-switches {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 0.65rem;
+    margin-bottom: -6px;
+}
+
+.profile-lang-switch {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.profile-lang-switch a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.5rem;
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    border: 1px solid var(--border);
+    background: var(--entry);
+    color: var(--secondary);
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-decoration: none;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.profile-lang-switch a:hover {
+    background: var(--theme);
+    color: var(--primary);
+}
+
+.profile-toggle {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.profile-toggle #theme-toggle {
+    margin: 0;
+}

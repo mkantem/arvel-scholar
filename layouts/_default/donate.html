@@ -1,0 +1,184 @@
+{{- define "main" -}}
+{{- $isFrench := eq .Lang "fr" -}}
+<article class="donate-page">
+  <section class="donate-hero">
+    <div class="donate-hero__content">
+      <p class="donate-kicker">{{ cond $isFrench "Soutenir le travail" "Support the work" }}</p>
+      <h1 class="donate-title">{{ .Title }}</h1>
+      <p class="donate-lead">
+        {{ cond $isFrench "Soutenez un projet précis ou faites un don plus libre pour appuyer mes recherches, mes projets et mes activités." "Support a specific project or make a broader donation to support my research, projects, and activities." }}
+      </p>
+    </div>
+  </section>
+
+  <section class="donate-form-shell" id="donation-form">
+    <div class="donate-alert" data-donate-alert hidden aria-live="polite"></div>
+    <div class="donate-form-copy">
+      <p class="donate-form-copy__eyebrow">{{ cond $isFrench "Don" "Donation" }}</p>
+      <h2>{{ cond $isFrench "Faire un don" "Make a donation" }}</h2>
+      <p>{{ cond $isFrench "Le montant est saisi en francs CFA (XOF)." "Amounts are entered in West African CFA francs (XOF)." }}</p>
+      <ul class="donate-form-copy__list">
+        <li>{{ cond $isFrench "Mobile money est réservé aux numéros maliens." "Mobile money is available for Malian phone numbers." }}</li>
+        <li>{{ cond $isFrench "Le paiement par carte peut être utilisé depuis n'importe quel pays." "Card payment can be used from any country." }}</li>
+        <li>{{ cond $isFrench "À titre indicatif, au taux moyen du 16 avril 2026, 1 USD vaut environ 556 XOF et 1 EUR environ 656 XOF." "As a rough guide, using mid-market rates from April 16, 2026, 1 USD is about 556 XOF and 1 EUR about 656 XOF." }}</li>
+      </ul>
+    </div>
+
+    <form class="donate-form" data-donate-form>
+      <div class="donate-grid">
+        <label class="donate-field">
+          <span>{{ cond $isFrench "Montant (FCFA)" "Amount (CFA)" }}</span>
+          <input type="number" name="amount" min="100" step="100" placeholder="5000" required>
+        </label>
+        <label class="donate-field">
+          <span>{{ cond $isFrench "Nom" "Name" }}</span>
+          <input type="text" name="donor_name" placeholder="{{ cond $isFrench "Entrez votre nom complet" "Enter your full name" }}" required>
+        </label>
+      </div>
+
+      <div class="donate-grid">
+        <label class="donate-field">
+          <span>{{ cond $isFrench "Email" "Email" }}</span>
+          <input type="email" name="email" placeholder="you@example.com" required>
+        </label>
+        <label class="donate-field">
+          <span>{{ cond $isFrench "Téléphone" "Phone number" }}</span>
+          <input type="text" name="telephone" inputmode="numeric" pattern="[0-9]{8}" placeholder="{{ cond $isFrench "Numéro malien à 8 chiffres, ex. 76123456" "8-digit Malian number, e.g. 76123456" }}">
+        </label>
+      </div>
+
+      <div class="donate-fieldset">
+        <p class="donate-fieldset__title">{{ cond $isFrench "Mode de paiement" "Payment method" }}</p>
+        <label><input type="radio" name="payment_method" value="orange" checked> Orange Money</label>
+        <label><input type="radio" name="payment_method" value="moov"> Moov Money</label>
+        <label><input type="radio" name="payment_method" value="sama"> Sama Money</label>
+        <label><input type="radio" name="payment_method" value="wave"> Wave</label>
+        <label><input type="radio" name="payment_method" value="card"> {{ cond $isFrench "Carte bancaire" "Card payment" }}</label>
+      </div>
+
+      <label class="donate-field">
+        <span>{{ cond $isFrench "Message ou précision (optionnel)" "Message or note (optional)" }}</span>
+        <textarea name="note" rows="4" placeholder="{{ cond $isFrench "Vous pouvez indiquer ici comment vous souhaitez que le don soit utilisé." "You can indicate here how you would like the donation to be used." }}"></textarea>
+      </label>
+
+      <input type="hidden" name="locale" value="{{ .Lang }}">
+
+      <div class="donate-submit">
+        <button type="submit">{{ cond $isFrench "Continuer" "Continue" }}</button>
+        <p class="donate-status" data-donate-status aria-live="polite"></p>
+      </div>
+    </form>
+  </section>
+
+</article>
+
+<script>
+  (() => {
+    const form = document.querySelector('[data-donate-form]');
+    if (!form) return;
+
+    const phoneInput = form.querySelector('input[name="telephone"]');
+    const status = form.querySelector('[data-donate-status]');
+    const alertBox = document.querySelector('[data-donate-alert]');
+    const locale = (form.querySelector('input[name="locale"]')?.value || 'en').toLowerCase();
+    const copy = locale === 'fr'
+      ? {
+          loading: 'Préparation du paiement...',
+          missingPhone: 'Veuillez renseigner un numéro malien à 8 chiffres, sans +223.',
+          invalidPhone: 'Veuillez utiliser un numéro malien à 8 chiffres, sans +223.',
+          setup: "Le paiement n'est pas encore disponible en ligne.",
+          generic: "Impossible de lancer le paiement pour le moment.",
+          pending: "La demande a été envoyée. Vérifiez maintenant votre téléphone pour confirmer le paiement.",
+          success: "Paiement confirmé. Merci beaucoup pour votre soutien.",
+          cancelled: "Le paiement a été annulé.",
+          callback: "Le paiement a été traité. Merci pour votre soutien."
+        }
+      : {
+          loading: 'Preparing payment...',
+          missingPhone: 'Please enter an 8-digit Malian number, without +223.',
+          invalidPhone: 'Please use an 8-digit Malian number, without +223.',
+          setup: 'Online payment is not available yet.',
+          generic: 'Unable to start payment right now.',
+          pending: 'The request was sent. Please check your phone now to confirm the payment.',
+          success: 'Payment confirmed. Thank you very much for your support.',
+          cancelled: 'The payment was cancelled.',
+          callback: 'The payment has been processed. Thank you for your support.'
+        };
+
+    const isValidMalianPhone = (value) => /^[0-9]{8}$/.test(String(value || '').trim());
+
+    const url = new URL(window.location.href);
+    const paymentStatus = url.searchParams.get('status');
+    if (alertBox && paymentStatus) {
+      const map = {
+        success: copy.success,
+        cancelled: copy.cancelled,
+        processed: copy.callback
+      };
+      if (map[paymentStatus]) {
+        alertBox.textContent = map[paymentStatus];
+        alertBox.hidden = false;
+        alertBox.dataset.state = paymentStatus;
+      }
+    }
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const submitButton = form.querySelector('button[type="submit"]');
+      const payload = Object.fromEntries(new FormData(form).entries());
+      const needsPhone = ['orange', 'moov', 'sama', 'wave'].includes(payload.payment_method);
+
+      if (needsPhone && !String(payload.telephone || '').trim()) {
+        status.textContent = copy.missingPhone;
+        status.dataset.state = 'error';
+        phoneInput.focus();
+        return;
+      }
+
+      if (needsPhone && !isValidMalianPhone(payload.telephone)) {
+        status.textContent = copy.invalidPhone;
+        status.dataset.state = 'error';
+        phoneInput.focus();
+        return;
+      }
+
+      submitButton.disabled = true;
+      status.textContent = copy.loading;
+      status.dataset.state = 'loading';
+
+      try {
+        const response = await fetch('/api/donate/initiate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await response.json().catch(() => ({}));
+
+        if (data.setup_pending) {
+          status.textContent = data.message || copy.setup;
+          status.dataset.state = 'pending';
+          return;
+        }
+
+        if (data.confirmation_pending) {
+          status.textContent = data.message || copy.pending;
+          status.dataset.state = 'pending';
+          return;
+        }
+
+        if (!response.ok || !data.ok || !data.payment_url) {
+          throw new Error(data.message || copy.generic);
+        }
+
+        window.location.href = data.payment_url;
+      } catch (error) {
+        status.textContent = error.message || copy.generic;
+        status.dataset.state = 'error';
+      } finally {
+        submitButton.disabled = false;
+      }
+    });
+  })();
+</script>
+{{- end -}}
